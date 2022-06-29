@@ -9,7 +9,7 @@ define f = Character("your friend - pick name")
 
 define u = Character()
 
-# The game starts here.
+# The game starts here.  Commnet Try
 
 label start:
 
