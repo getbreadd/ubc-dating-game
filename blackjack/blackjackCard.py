@@ -28,4 +28,4 @@ class Card:
         elif(self.number == 13):
             print('K' + self.suit)
         else:
-            print(self.number,self.suit);
+            print(self.number,self.suit,sep="");

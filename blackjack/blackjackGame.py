@@ -2,6 +2,31 @@ import pygame
 from blackjackPlayer import *
 from blackjackDeck import *
 
+# helper methods
+def dealerPrintHand():
+    print("Dealer cards:")
+    dealer.printCards()
+    print("Total:",dealer.getTotal(),end="\n")
+    return
+
+def dealerTurn():
+    inp = input('---Enter for dealer turn---')
+    while (inp != ""):
+        inp = input('---Please press enter for dealer turn---')
+    while (dealer.getTotal() < 17):
+        dealerPrintHand()
+        print("Dealer hits")
+        dealer.addCard(deck.drawCard())
+        inp = input('---Please press enter to continue---')
+        while (inp != ""):
+            inp = input('---Please press enter for to continue---')
+    dealerPrintHand()
+    if (dealer.getTotal() > 21):
+        print("Dealer busts!")
+    else:
+        print("Dealer stands")
+    return
+
 pygame.init()
 
 width = 500;
@@ -21,27 +46,28 @@ pygame.display.flip();
 deck = Deck();
 # deck.printCards();
 player = Player('Name')
-comp = Player('Computer')
+dealer = Player('Dealer')
 
-cardToAdd = deck.drawCard()
-player.addCard(cardToAdd)
-cardToAdd = deck.drawCard()
-player.addCard(cardToAdd)
-cardToAdd = deck.drawCard()
-player.addCard(cardToAdd)
-player.printCards()
-total = player.getTotal()
-print('total: ', total)
-# for x in range(53):
-#     card = deck.drawCard()
-#     card.printCard()
+dealerTurn()
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            pygame.quit()
+# cardToAdd = deck.drawCard()
+# player.addCard(cardToAdd)
+# cardToAdd = deck.drawCard()
+# player.addCard(cardToAdd)
+# cardToAdd = deck.drawCard()
+# player.addCard(cardToAdd)
+# player.printCards()
+# total = player.getTotal()
+# print('total: ', total)
+
+# running = True
+# while running:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+#             pygame.quit()
+            
+            
         # elif event.type = pygame.MOUSEBUTTONDOWN:
         
     # JUST TRYING STUFF OUT
