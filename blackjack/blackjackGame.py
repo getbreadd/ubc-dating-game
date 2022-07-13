@@ -3,6 +3,31 @@ from PIL import Image
 from blackjackPlayer import *
 from blackjackDeck import *
 
+# helper methods
+def dealerPrintHand():
+    print("Dealer cards:")
+    dealer.printCards()
+    print("Total:",dealer.getTotal(),end="\n")
+    return
+
+def dealerTurn():
+    inp = input('---Enter for dealer turn---')
+    while (inp != ""):
+        inp = input('---Please press enter for dealer turn---')
+    while (dealer.getTotal() < 17):
+        dealerPrintHand()
+        print("Dealer hits")
+        dealer.addCard(deck.drawCard())
+        inp = input('---Please press enter to continue---')
+        while (inp != ""):
+            inp = input('---Please press enter for to continue---')
+    dealerPrintHand()
+    if (dealer.getTotal() > 21):
+        print("Dealer busts!")
+    else:
+        print("Dealer stands")
+    return
+
 pygame.init()
 
 WIDTH = 1500
@@ -23,7 +48,7 @@ pygame.display.flip()
 deck = Deck()
 # deck.printCards();
 user = Player('Name')
-dealer = Player('Computer')
+dealer = Player('Dealer')
 
 # Game Variables
 playerTurn = user
@@ -33,18 +58,15 @@ announcer = font.render(initMessage, True, RED, None)
 announcerArea = announcer.get_rect()
 announcerArea.center = (WIDTH // 2, HEIGHT // 10)
 
-cardToAdd = deck.drawCard()
-user.addCard(cardToAdd)
-cardToAdd = deck.drawCard()
-user.addCard(cardToAdd)
-cardToAdd = deck.drawCard()
-user.addCard(cardToAdd)
-user.printCards()
-total = user.getTotal()
-print('total: ', total)
-# for x in range(53):
-#     card = deck.drawCard()
-#     card.printCard()
+# cardToAdd = deck.drawCard()
+# player.addCard(cardToAdd)
+# cardToAdd = deck.drawCard()
+# player.addCard(cardToAdd)
+# cardToAdd = deck.drawCard()
+# player.addCard(cardToAdd)
+# player.printCards()
+# total = player.getTotal()
+# print('total: ', total)
 
 
 # =======================================================================================
@@ -84,7 +106,7 @@ def userTurn():
         else:
             print("Not a valid response. Try again...if you want to live...")
 
-
+dealerTurn()
 
 running = True
 while running:
