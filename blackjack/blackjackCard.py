@@ -15,17 +15,17 @@ class Card:
     def getSuit(self):
         return self.suit
 
-    def getSuit(self):
-        return self.suit;
+    def getCardImage(self):
+        return "blackjack/Images/" + self.getValue() + self.getSuit() + ".jpg"
     
     def printCard(self):
         if (self.number == 1):
-            print('A' + self.suit)
+            print('A' + self.suit, end = ', ')
         elif (self.number == 11):
-            print('J' + self.suit)
+            print('J' + self.suit, end = ', ')
         elif(self.number == 12):
-            print('Q' + self.suit)
+            print('Q' + self.suit, end = ', ')
         elif(self.number == 13):
-            print('K' + self.suit)
+            print('K' + self.suit, end = ', ')
         else:
-            print(self.number,self.suit,sep="");
+            print(str(self.number) + self.suit, end = ', ')

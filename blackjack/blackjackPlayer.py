@@ -31,5 +31,8 @@ class Player:
         return numAce
     
     def printCards(self):
+        print("Your cards: ", end = '')
+        print("[", end = '')
         for card in self.cards:
-            card.printCard();
+            card.printCard()
+        print("]")
