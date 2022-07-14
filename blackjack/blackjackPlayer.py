@@ -3,6 +3,7 @@ class Player:
     def __init__(self, playerName):
         self.playerName = playerName
         self.cards = []
+        self.bankroll = 0
 
     def getPlayerHand(self):
         return self.cards
@@ -29,6 +30,18 @@ class Player:
             if x.getValue == 1:
                 numAce += 1
         return numAce
+    
+    def getBankrollAmount(self):
+        return self.bankroll
+    
+    def updateBankroll(self, amount):
+        self.bankroll += amount
+    
+    def hasBlackjack(self):
+        return self.getTotal() == 21
+
+    def isBusted(self):
+        return self.getTotal() > 21
     
     def printCards(self):
         print("Your cards: ", end = '')
