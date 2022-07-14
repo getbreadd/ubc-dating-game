@@ -1,5 +1,6 @@
+from logging import setLogRecordFactory
 import pygame
-from PIL import Image
+# from PIL import Image
 from blackjackPlayer import *
 from blackjackDeck import *
 
@@ -26,6 +27,9 @@ dealer = Player('Dealer')
 # ------------------------------- GAME VARIABLES -------------------------------
 
 playerTurn = user
+betAmount = 0
+winner = None
+
 initMessage = "LET'S GIVE AWAY ALL YOUR MONEYYYYY ^ - ^"
 font = pygame.font.Font('freesansbold.ttf', 32)
 announcer = font.render(initMessage, True, RED, None)
@@ -64,6 +68,37 @@ def announceText(msg, msgColour, bckgdColour):
     screen.blit(announcer, announcerArea)
     pygame.display.update()
 
+# User to place the bet amount
+def placeBet():
+    global betAmount
+    betAmount = int(input("How many hearts would you like to bet?: "))
+
+# change bet amount to loss if user lost game
+def updateBetAmount(winner):
+    global betAmount
+    if (winner == dealer):
+        betAmount *= -1
+    elif (winner == None):
+        betAmount = 0
+
+# Determine who the winner of the game is
+def determineWinner():
+    global winner
+    if (winner == None):
+        dealerTotal = dealer.getTotal()
+        userTotal = user.getTotal()
+        dealerBusted = dealer.isBusted()
+        userBusted = user.isBusted()
+        # dealer wins
+        if (userBusted | ((not dealerBusted) & dealerTotal > userTotal)):
+            winner = dealer
+        elif (dealerBusted | ((not userBusted) & userTotal > dealerTotal)):
+            winner = user
+        else:
+            winner = None
+            print("PUSH!")
+    updateBetAmount(winner)
+
 # ------------------------------- USER METHODS -------------------------------
 
 # User takes a turn: hit or stand
@@ -71,26 +106,31 @@ def announceText(msg, msgColour, bckgdColour):
 #     -> check value for busted -> busted? end turn : continue
 # stand -> end turn
 def userTurn():
-    global playerTurn
+    global playerTurn, winner
     print("It's your turn!!")
     while(playerTurn == user):
         user.printCards()
         print("Total: " + str(user.getTotal()))
+        if (user.hasBlackjack()):
+            user.printCards()
+            print("Congrats! You got BLACKJACK!!")
+            return
         choice = input("Would you like to hit or stand?: ")
         if (choice.casefold() == "hit"):
             newCard = deck.drawCard()
             user.addCard(newCard)
-            if (user.getTotal() > 21):
+            if (user.isBusted()):
+                winner = dealer
                 user.printCards()
                 print("Total: " + str(user.getTotal()))
                 print("You're busted! RIP")
-                playerTurn = dealer
+                # playerTurn = dealer
                 return
         elif (choice.casefold() == "stand"):
             playerTurn = dealer
             return
         else:
-            print("Not a valid response. Try again...if you want to live...")
+            print("Not a valid response. Try again...")
 
 # ------------------------------- DEALER METHODS -------------------------------
 
@@ -112,7 +152,9 @@ def dealerTurn():
         while (inp != ""):
             inp = input('---Please press enter for to continue---')
     dealerPrintHand()
-    if (dealer.getTotal() > 21):
+    if (dealer.hasBlackjack()):
+        print("Dealer has BLACKJACK!!")
+    elif (dealer.isBusted()):
         print("Dealer busts!")
     else:
         print("Dealer stands")
@@ -121,8 +163,12 @@ def dealerTurn():
 
 # ------------------------------- CONSOLE TESTING -------------------------------
 
+placeBet()
 userTurn()
 dealerTurn()
+determineWinner()
+user.updateBankroll(betAmount)
+print("Remaining points: ", user.getBankrollAmount(), sep = "")
 
 #  ------------------------------- PYGAME -------------------------------
 
