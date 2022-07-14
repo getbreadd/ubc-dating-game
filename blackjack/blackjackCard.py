@@ -1,7 +1,9 @@
+RANKS = [0, "A", 2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K"]
+
 class Card:
-    def __init__(self, suit, number):
-        self.suit = suit;
-        self.number = number;
+    def __init__(self, suit, rank):
+        self.suit = suit
+        self.rank = rank
         
     def returnCard(self):
         return self;
@@ -10,22 +12,18 @@ class Card:
         del self;
         
     def getValue(self):
-        return self.number;
+        value = self.rank
+        if (value > 10):
+            value = 10
+        elif (value == 1):
+            value = 11
+        return value
     
     def getSuit(self):
         return self.suit
 
     def getCardImage(self):
-        return "blackjack/Images/" + self.getValue() + self.getSuit() + ".jpg"
+        return "blackjack/Images/" + str(RANKS[self.rank]) + self.suit + ".jpg"
     
     def printCard(self):
-        if (self.number == 1):
-            print('A' + self.suit, end = ', ')
-        elif (self.number == 11):
-            print('J' + self.suit, end = ', ')
-        elif(self.number == 12):
-            print('Q' + self.suit, end = ', ')
-        elif(self.number == 13):
-            print('K' + self.suit, end = ', ')
-        else:
-            print(str(self.number) + self.suit, end = ', ')
+        print(str(RANKS[self.rank]) + self.suit, end = ", ")

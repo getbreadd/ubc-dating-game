@@ -41,13 +41,13 @@ class Player:
         self.bankroll += amount
     
     def hasBlackjack(self):
-        return self.getTotal() == 21
+        return ((len(self.cards) == 2) & (self.getTotal() == 21))
 
     def isBusted(self):
         return self.getTotal() > 21
     
     def printCards(self):
-        print("Your cards: ", end = '')
+        print(self.name + ": ", end = '')
         print("[", end = '')
         for card in self.cards:
             card.printCard()

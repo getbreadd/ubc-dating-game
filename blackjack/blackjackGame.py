@@ -21,7 +21,7 @@ RED = pygame.Color("red")
 # initialize deck and players
 deck = Deck()
 # deck.printCards();
-user = Player('Name')
+user = Player('User')
 dealer = Player('Dealer')
 
 # ------------------------------- GAME VARIABLES -------------------------------
@@ -175,17 +175,20 @@ def dealerTurn():
 
 # ------------------------------- CONSOLE TESTING -------------------------------
 
+print("Starting amount of hearts: ", user.getBankrollAmount(), sep = "")
 placeBet()
 user.addCard(deck.drawCard())
 user.addCard(deck.drawCard())
 dealer.addCard(deck.drawCard())
 print("Starting cards:")
 user.printCards()
-print("Dealer:")
 dealer.printCards()
 dealer.addCard(deck.drawCard())
+print("----------------------------------")
 userTurn()
+print("----------------------------------")
 dealerTurn()
+print("----------------------------------")
 determineWinner()
 printWinner()
 user.updateBankroll(betAmount)
