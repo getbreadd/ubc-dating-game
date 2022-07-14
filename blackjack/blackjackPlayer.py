@@ -1,9 +1,12 @@
 from blackjackCard import *
 class Player:
-    def __init__(self, playerName):
-        self.playerName = playerName
+    def __init__(self, name):
+        self.name = name
         self.cards = []
         self.bankroll = 0
+
+    def getName(self):
+        return self.name
 
     def getPlayerHand(self):
         return self.cards
