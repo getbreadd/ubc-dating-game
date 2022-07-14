@@ -90,9 +90,9 @@ def determineWinner():
         dealerBusted = dealer.isBusted()
         userBusted = user.isBusted()
         # dealer wins
-        if (userBusted | ((not dealerBusted) & dealerTotal > userTotal)):
+        if (userBusted | ((not dealerBusted) & (dealerTotal > userTotal))):
             winner = dealer
-        elif (dealerBusted | ((not userBusted) & userTotal > dealerTotal)):
+        elif (dealerBusted | ((not userBusted) & (userTotal > dealerTotal))):
             winner = user
         else:
             winner = None
@@ -103,7 +103,9 @@ def printWinner():
     global winner
     if (winner == None):
         winner = "No one"
-    print("The winner is...", winner.getName(), "!!", sep = "")
+        print("The winner is...", winner, "!!", sep = "")
+    else:
+        print("The winner is...", winner.getName(), "!!", sep = "")
 
 # ------------------------------- USER METHODS -------------------------------
 
@@ -113,6 +115,10 @@ def printWinner():
 # stand -> end turn
 def userTurn():
     global playerTurn, winner
+    if user.isBusted():
+        winner = dealer
+        print("You bust!!")
+        return
     print("It's your turn!!")
     while(playerTurn == user):
         user.printCards()
@@ -170,6 +176,14 @@ def dealerTurn():
 # ------------------------------- CONSOLE TESTING -------------------------------
 
 placeBet()
+user.addCard(deck.drawCard())
+user.addCard(deck.drawCard())
+dealer.addCard(deck.drawCard())
+print("Starting cards:")
+user.printCards()
+print("Dealer:")
+dealer.printCards()
+dealer.addCard(deck.drawCard())
 userTurn()
 dealerTurn()
 determineWinner()
