@@ -99,6 +99,12 @@ def determineWinner():
             print("PUSH!")
     updateBetAmount(winner)
 
+def printWinner():
+    global winner
+    if (winner == None):
+        winner = "No one"
+    print("The winner is...", winner.getName(), "!!", sep = "")
+
 # ------------------------------- USER METHODS -------------------------------
 
 # User takes a turn: hit or stand
@@ -167,8 +173,9 @@ placeBet()
 userTurn()
 dealerTurn()
 determineWinner()
+printWinner()
 user.updateBankroll(betAmount)
-print("Remaining points: ", user.getBankrollAmount(), sep = "")
+print("Remaining hearts: ", user.getBankrollAmount(), sep = "")
 
 #  ------------------------------- PYGAME -------------------------------
 
