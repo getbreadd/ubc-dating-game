@@ -10,6 +10,8 @@ pygame.init()
 
 WIDTH = 1000
 HEIGHT = 700
+USER_WIDTH = WIDTH // 2
+USER_HEIGHT = HEIGHT // 4
 
 GRAY = (110, 110, 110)
 GREEN = (46, 112, 64)
@@ -18,6 +20,7 @@ RED = pygame.Color("red")
 
 BACKGROUND_COLOUR = GREEN
 CARD_SPACE = 3
+CARD_WIDTH = 75
 
 # ------------------------------- INITIALIZE GAME STATS -------------------------------
 
@@ -209,10 +212,12 @@ def dealerTurn():
 #  ------------------------------- PYGAME -------------------------------
 
 initHands()
+# card = deck.drawCard()
+# user.addCard(card)
 user.printCards()
 
 # Area to display user's cards
-userCardArea = pygame.surface.Surface((WIDTH // 2, HEIGHT // 4))
+userCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
 userCardArea.fill(BACKGROUND_COLOUR)
 
 running = True
@@ -220,7 +225,8 @@ while running:
     # Initial message to user
     announceText(initMessage, RED, None)
 
-    (x, y) = (0, 0)
+    # Position cards in center no matter amount of cards
+    (x, y) = ((1 / 2) * (USER_WIDTH - (user.getNumCards() * CARD_WIDTH) - (CARD_SPACE * (user.getNumCards() - 1))), 0)
     for card in user.cards:
         currCardImg = pygame.image.load(card.getCardImage())
         userCardArea.blit(currCardImg, (x, y))
