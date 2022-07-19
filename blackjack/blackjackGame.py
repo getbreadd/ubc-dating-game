@@ -1,4 +1,5 @@
 from logging import setLogRecordFactory
+from venv import create
 import pygame
 # from PIL import Image
 from blackjackPlayer import *
@@ -65,7 +66,7 @@ pygame.display.flip()
 # HELPER METHODS
 # =======================================================================================
 
-# ------------------------------- OTHER HELPER METHODS -------------------------------
+# ------------------------------- OTHER UI HELPER METHODS -------------------------------
 
 # Change Announcer mesage
 def announceText(msg, msgColour, bckgdColour):
@@ -73,6 +74,22 @@ def announceText(msg, msgColour, bckgdColour):
     announcer = font.render(msg, True, msgColour, bckgdColour)
     screen.blit(announcer, announcerArea)
     pygame.display.update()
+
+def createTextButton(msg, msgColour, bckgdColour):
+    text = font.render(msg, True, msgColour, None)
+    buttonSurface = pygame.surface.Surface((text.get_width(), text.get_height()))
+    buttonSurface.fill(bckgdColour)
+    buttonSurface.blit(text, (0, 0))
+    return buttonSurface
+
+def createImageButton(img, bckgdColour):
+    buttonSurface = pygame.surface.Surface((img.get_width(), img.get_height()))
+    buttonSurface.fill(bckgdColour)
+    buttonSurface.blit(img, (0, 0))
+    return buttonSurface
+
+
+# ------------------------------- OTHER GAME HELPER METHODS -------------------------------
 
 # User to place the bet amount
 def placeBet():
@@ -231,8 +248,14 @@ while running:
         currCardImg = pygame.image.load(card.getCardImage())
         userCardArea.blit(currCardImg, (x, y))
         x += currCardImg.get_width() + CARD_SPACE
+        button1 = createImageButton(currCardImg, RED)
+        screen.blit(button1, (0, 0))
 
     screen.blit(userCardArea, (WIDTH //4, HEIGHT * 0.75))
+
+    # Add Button
+    # button1 = createTextButton("CLICK ME NOWWW!!!", pygame.Color("White"), RED)
+    # screen.blit(button1, (0, 0))
 
 
     # # For inlcuding images
@@ -248,7 +271,10 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
-        # elif event.type = pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            img = pygame.image.load("blackjack/Images/cards/AS.jpg")
+            button2 = createImageButton(img, RED)
+            screen.blit(button2, (0, 0))
     pygame.display.update()
 
 
