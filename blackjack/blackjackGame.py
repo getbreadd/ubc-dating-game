@@ -8,13 +8,19 @@ pygame.init()
 
 # ------------------------------- CONSTANTS -------------------------------
 
-WIDTH = 1500
-HEIGHT = 1000
+WIDTH = 1000
+HEIGHT = 700
+USER_WIDTH = WIDTH // 2
+USER_HEIGHT = HEIGHT // 4
 
 GRAY = (110, 110, 110)
 GREEN = (46, 112, 64)
 LIGHT_GREEN = (117, 186, 117)
 RED = pygame.Color("red")
+
+BACKGROUND_COLOUR = GREEN
+CARD_SPACE = 3
+CARD_WIDTH = 75
 
 # ------------------------------- INITIALIZE GAME STATS -------------------------------
 
@@ -50,7 +56,7 @@ announcerArea.center = (WIDTH // 2, HEIGHT // 10)
 
 # initialize screen and display
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-screen.fill(GREEN)
+screen.fill(BACKGROUND_COLOUR)
 pygame.display.set_caption("It's time to gamble!")
 pygame.display.flip()
 
@@ -72,6 +78,15 @@ def announceText(msg, msgColour, bckgdColour):
 def placeBet():
     global betAmount
     betAmount = int(input("How many hearts would you like to bet?: "))
+
+def initHands():
+    user.addCard(deck.drawCard())
+    user.addCard(deck.drawCard())
+    dealer.addCard(deck.drawCard())
+    print("Starting cards:")
+    user.printCards()
+    dealer.printCards()
+    dealer.addCard(deck.drawCard())
 
 # change bet amount to loss if user lost game
 def updateBetAmount(winner):
@@ -175,46 +190,65 @@ def dealerTurn():
 
 # ------------------------------- CONSOLE TESTING -------------------------------
 
-print("Starting amount of hearts: ", user.getBankrollAmount(), sep = "")
-placeBet()
-user.addCard(deck.drawCard())
-user.addCard(deck.drawCard())
-dealer.addCard(deck.drawCard())
-print("Starting cards:")
-user.printCards()
-dealer.printCards()
-dealer.addCard(deck.drawCard())
-print("----------------------------------")
-userTurn()
-print("----------------------------------")
-dealerTurn()
-print("----------------------------------")
-determineWinner()
-printWinner()
-user.updateBankroll(betAmount)
-print("Remaining hearts: ", user.getBankrollAmount(), sep = "")
+# print("Starting amount of hearts: ", user.getBankrollAmount(), sep = "")
+# placeBet()
+# user.addCard(deck.drawCard())
+# user.addCard(deck.drawCard())
+# dealer.addCard(deck.drawCard())
+# print("Starting cards:")
+# user.printCards()
+# dealer.printCards()
+# dealer.addCard(deck.drawCard())
+# print("----------------------------------")
+# userTurn()
+# print("----------------------------------")
+# dealerTurn()
+# print("----------------------------------")
+# determineWinner()
+# printWinner()
+# user.updateBankroll(betAmount)
+# print("Remaining hearts: ", user.getBankrollAmount(), sep = "")
 
 #  ------------------------------- PYGAME -------------------------------
 
-# running = True
-# while running:
-#     # Initial message to user
-#     announceText(initMessage, RED, None)
+initHands()
+# card = deck.drawCard()
+# user.addCard(card)
+user.printCards()
 
-#     # # For inlcuding images
-#     # currCardImg = pygame.image.load('blackjack/Images/2C.jpg')
-#     # screen.blit(currCardImg, (0, 0))
+# Area to display user's cards
+userCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
+userCardArea.fill(BACKGROUND_COLOUR)
 
-#     # User's turn
-#     # pause = input("Press enter to continue...")
-#     # announceText("IT'S YOUR TURN!! GIVE ME THAT MONEY", RED, None)
-#     # userTurn()
+running = True
+while running:
+    # Initial message to user
+    announceText(initMessage, RED, None)
 
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#             pygame.quit()
-#         # elif event.type = pygame.MOUSEBUTTONDOWN:
-#     pygame.display.update()
+    # Position cards in center no matter amount of cards
+    (x, y) = ((1 / 2) * (USER_WIDTH - (user.getNumCards() * CARD_WIDTH) - (CARD_SPACE * (user.getNumCards() - 1))), 0)
+    for card in user.cards:
+        currCardImg = pygame.image.load(card.getCardImage())
+        userCardArea.blit(currCardImg, (x, y))
+        x += currCardImg.get_width() + CARD_SPACE
+
+    screen.blit(userCardArea, (WIDTH //4, HEIGHT * 0.75))
+
+
+    # # For inlcuding images
+    # currCardImg = pygame.image.load('blackjack/Images/2C.jpg')
+    # screen.blit(currCardImg, (0, 0))
+
+    # User's turn
+    # pause = input("Press enter to continue...")
+    # announceText("IT'S YOUR TURN!! GIVE ME THAT MONEY", RED, None)
+    # userTurn()
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            pygame.quit()
+        # elif event.type = pygame.MOUSEBUTTONDOWN:
+    pygame.display.update()
 
 

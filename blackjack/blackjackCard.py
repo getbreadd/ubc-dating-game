@@ -23,7 +23,7 @@ class Card:
         return self.suit
 
     def getCardImage(self):
-        return "blackjack/Images/" + str(RANKS[self.rank]) + self.suit + ".jpg"
+        return "blackjack/Images/cards/" + str(RANKS[self.rank]) + self.suit + ".jpg"
     
     def printCard(self):
         print(str(RANKS[self.rank]) + self.suit, end = ", ")
