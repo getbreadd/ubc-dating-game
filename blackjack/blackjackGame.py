@@ -8,15 +8,20 @@ pygame.init()
 
 # ------------------------------- CONSTANTS -------------------------------
 
-WIDTH = 1000
-HEIGHT = 700
+# WIDTH = 1000
+WIDTH = 850
+# HEIGHT = 700
+HEIGHT = 600
 USER_WIDTH = WIDTH // 2
 USER_HEIGHT = HEIGHT // 4
+DEALER_CARD_COORDS = (WIDTH //4, HEIGHT * 0.25)
+USER_CARD_COORDS = (WIDTH //4, HEIGHT * 0.75)
 
 GRAY = (110, 110, 110)
 GREEN = (46, 112, 64)
 LIGHT_GREEN = (117, 186, 117)
 RED = pygame.Color("red")
+BLACK = pygame.Color("black")
 
 BACKGROUND_COLOUR = GREEN
 CARD_SPACE = 3
@@ -41,6 +46,7 @@ font = pygame.font.Font('freesansbold.ttf', 32)
 announcer = font.render(initMessage, True, RED, None)
 announcerArea = announcer.get_rect()
 announcerArea.center = (WIDTH // 2, HEIGHT // 10)
+smallFont = pygame.font.Font('freesansbold.ttf', 28)
 
 # cardToAdd = deck.drawCard()
 # player.addCard(cardToAdd)
@@ -83,10 +89,11 @@ def initHands():
     user.addCard(deck.drawCard())
     user.addCard(deck.drawCard())
     dealer.addCard(deck.drawCard())
+    dealer.addCard(deck.drawCard())
     print("Starting cards:")
     user.printCards()
     dealer.printCards()
-    dealer.addCard(deck.drawCard())
+    # dealer.addCard(deck.drawCard())
 
 # change bet amount to loss if user lost game
 def updateBetAmount(winner):
@@ -121,7 +128,7 @@ def printWinner():
         print("The winner is...", winner, "!!", sep = "")
     else:
         print("The winner is...", winner.getName(), "!!", sep = "")
-
+  
 # ------------------------------- USER METHODS -------------------------------
 
 # User takes a turn: hit or stand
@@ -220,19 +227,60 @@ user.printCards()
 userCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
 userCardArea.fill(BACKGROUND_COLOUR)
 
+# Area to display dealer's cards
+dealerCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
+dealerCardArea.fill(BACKGROUND_COLOUR)
+
 running = True
 while running:
     # Initial message to user
     announceText(initMessage, RED, None)
+    
+    # help button
+    # TODO !!!
 
     # Position cards in center no matter amount of cards
     (x, y) = ((1 / 2) * (USER_WIDTH - (user.getNumCards() * CARD_WIDTH) - (CARD_SPACE * (user.getNumCards() - 1))), 0)
     for card in user.cards:
         currCardImg = pygame.image.load(card.getCardImage())
+        # currCardImg = pygame.transform.scale(currCardImg, ((HEIGHT // 7), (WIDTH // 7)))  # resize test
         userCardArea.blit(currCardImg, (x, y))
         x += currCardImg.get_width() + CARD_SPACE
 
-    screen.blit(userCardArea, (WIDTH //4, HEIGHT * 0.75))
+    screen.blit(userCardArea, USER_CARD_COORDS)
+    
+    # Position initial dealer cards
+    (w, z) = ((1 / 2) * (USER_WIDTH - (dealer.getNumCards() * CARD_WIDTH) - (CARD_SPACE * (dealer.getNumCards() - 1))), 0)
+    for card in dealer.cards:
+        currCardImg = pygame.image.load(card.getCardImage())
+        dealerCardArea.blit(currCardImg, (w, z))
+        w += currCardImg.get_width() + CARD_SPACE
+        
+    # TO DISPLAY 1 FACEUP 1 FACEDOWN CARD
+    # currCardImg = pygame.image.load(dealer.cards[0].getCardImage())
+    # dealerCardArea.blit(currCardImg, (w, z))
+    # w += currCardImg.get_width() + CARD_SPACE
+    # currCardImg = pygame.image.load("blackjack/Images/cards/FACEDOWNCARD.jpg") # FILL IN LATER
+    # dealerCardArea.blit(currCardImg, (w, z))
+            
+    screen.blit(dealerCardArea, DEALER_CARD_COORDS)
+    
+    # Position the "Dealer's Cards" and "User's Cards" text
+    dealerCardText = smallFont.render("Dealer's Cards", True, BLACK, None)
+    dealerCardTextArea = dealerCardText.get_rect()
+    screen.blit(dealerCardText, ((WIDTH // 2) - (dealerCardTextArea.width // 2), (DEALER_CARD_COORDS[1] - dealerCardTextArea.height - 10)))
+    
+    userCardText = smallFont.render("Your Cards", True, BLACK, None)
+    userCardTextArea = userCardText.get_rect()
+    screen.blit(userCardText, ((WIDTH // 2) - (userCardTextArea.width // 2), (USER_CARD_COORDS[1] - userCardTextArea.height - 10)))
+    pygame.display.update()
+    
+    # user turn
+    
+    # dealer turn
+    
+    # ending screen
+    
 
 
     # # For inlcuding images
