@@ -11,11 +11,13 @@ pygame.init()
 # WIDTH = 1000
 WIDTH = 850
 # HEIGHT = 700
-HEIGHT = 600
+HEIGHT = 650
 USER_WIDTH = WIDTH // 2
 USER_HEIGHT = HEIGHT // 4
 DEALER_CARD_COORDS = (WIDTH //4, HEIGHT * 0.25)
-USER_CARD_COORDS = (WIDTH //4, HEIGHT * 0.75)
+USER_CARD_COORDS = (WIDTH //4, HEIGHT * 0.60)
+CARD_HEIGHT = pygame.image.load("blackjack/Images/cards/2C.jpg").get_height()
+CARD_WIDTH = pygame.image.load("blackjack/Images/cards/2C.jpg").get_width()
 
 GRAY = (110, 110, 110)
 GREEN = (46, 112, 64)
@@ -47,6 +49,7 @@ announcer = font.render(initMessage, True, RED, None)
 announcerArea = announcer.get_rect()
 announcerArea.center = (WIDTH // 2, HEIGHT // 10)
 smallFont = pygame.font.Font('freesansbold.ttf', 28)
+cardTotalFont = pygame.font.Font('freesansbold.ttf', 18)
 
 # cardToAdd = deck.drawCard()
 # player.addCard(cardToAdd)
@@ -273,7 +276,18 @@ while running:
     userCardText = smallFont.render("Your Cards", True, BLACK, None)
     userCardTextArea = userCardText.get_rect()
     screen.blit(userCardText, ((WIDTH // 2) - (userCardTextArea.width // 2), (USER_CARD_COORDS[1] - userCardTextArea.height - 10)))
+    
+    # Position the "Dealer Total" and "Your total" text
+    dealerTotalText = cardTotalFont.render(("Total: " + str(dealer.getTotal())), True, BLACK, None)
+    dealerTotalTextArea = dealerTotalText.get_rect()
+    screen.blit(dealerTotalText, ((WIDTH // 2) - (dealerTotalTextArea.width // 2), (DEALER_CARD_COORDS[1] + CARD_HEIGHT + 10)))
+    
+    userTotalText = cardTotalFont.render(("Total: " + str(user.getTotal())), True, BLACK, None)
+    userTotalTextArea = userTotalText.get_rect()
+    screen.blit(userTotalText, ((WIDTH // 2) - (userTotalTextArea.width // 2), (USER_CARD_COORDS[1] + CARD_HEIGHT + 10)))
     pygame.display.update()
+    
+    # !!! refactor with helper method for the text stuff later
     
     # user turn
     
