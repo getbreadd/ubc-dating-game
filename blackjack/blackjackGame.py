@@ -278,7 +278,8 @@ while running:
     screen.blit(userCardText, ((WIDTH // 2) - (userCardTextArea.width // 2), (USER_CARD_COORDS[1] - userCardTextArea.height - 10)))
     
     # Position the "Dealer Total" and "Your total" text
-    dealerTotalText = cardTotalFont.render(("Total: " + str(dealer.getTotal())), True, BLACK, None)
+    # dealerTotalText = cardTotalFont.render(("Total: " + str(dealer.getTotal())), True, BLACK, None)
+    dealerTotalText = cardTotalFont.render(("Total: ?"), True, BLACK, None)
     dealerTotalTextArea = dealerTotalText.get_rect()
     screen.blit(dealerTotalText, ((WIDTH // 2) - (dealerTotalTextArea.width // 2), (DEALER_CARD_COORDS[1] + CARD_HEIGHT + 10)))
     
