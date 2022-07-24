@@ -1,9 +1,9 @@
-﻿# The script of the game goes in this file.
+# The script of the game goes in this file.
 
 # Declare characters used by this game. The color argument colorizes the
 # name of the character.
 
-define e = Character("Eileen")
+
 
 define f = Character("your friend - pick name")
 
@@ -25,7 +25,7 @@ label start:
 
     show eileen happy
 
-    # These display lines of dialogue.
+    # These display lines of dialogue
 
     f "Hey, are you going to the party next week? I heard it's going to be pretty fun actually."
 
