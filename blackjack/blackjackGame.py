@@ -271,17 +271,17 @@ while running:
     
     # Position initial dealer cards
     (w, z) = ((1 / 2) * (USER_WIDTH - (dealer.getNumCards() * CARD_WIDTH) - (CARD_SPACE * (dealer.getNumCards() - 1))), 0)
-    for card in dealer.cards:
-        currCardImg = pygame.image.load(card.getCardImage())
-        dealerCardArea.blit(currCardImg, (w, z))
-        w += currCardImg.get_width() + CARD_SPACE
+    # for card in dealer.cards:
+    #     currCardImg = pygame.image.load(card.getCardImage())
+    #     dealerCardArea.blit(currCardImg, (w, z))
+    #     w += currCardImg.get_width() + CARD_SPACE
         
     # TO DISPLAY 1 FACEUP 1 FACEDOWN CARD
-    # currCardImg = pygame.image.load(dealer.cards[0].getCardImage())
-    # dealerCardArea.blit(currCardImg, (w, z))
-    # w += currCardImg.get_width() + CARD_SPACE
-    # currCardImg = pygame.image.load("blackjack/Images/cards/FACEDOWNCARD.jpg") # FILL IN LATER
-    # dealerCardArea.blit(currCardImg, (w, z))
+    currCardImg = pygame.image.load(dealer.cards[0].getCardImage())
+    dealerCardArea.blit(currCardImg, (w, z))
+    w += currCardImg.get_width() + CARD_SPACE
+    currCardImg = pygame.image.load("blackjack/Images/cards/Card_Back.jpg") # FILL IN LATER
+    dealerCardArea.blit(currCardImg, (w, z))
             
     screen.blit(dealerCardArea, DEALER_CARD_COORDS)
     
