@@ -19,6 +19,7 @@ GREEN = (46, 112, 64)
 LIGHT_GREEN = (117, 186, 117)
 RED = pygame.Color("red")
 
+FONT = pygame.font.Font('freesansbold.ttf', 32)
 BACKGROUND_COLOUR = GREEN
 CARD_SPACE = 3
 CARD_WIDTH = 75
@@ -38,8 +39,7 @@ betAmount = 0
 winner = None
 
 initMessage = "LET'S GIVE AWAY ALL YOUR MONEYYYYY ^ - ^"
-font = pygame.font.Font('freesansbold.ttf', 32)
-announcer = font.render(initMessage, True, RED, None)
+announcer = FONT.render(initMessage, True, RED, None)
 announcerArea = announcer.get_rect()
 announcerArea.center = (WIDTH // 2, HEIGHT // 10)
 
@@ -71,22 +71,22 @@ pygame.display.flip()
 # Change Announcer mesage
 def announceText(msg, msgColour, bckgdColour):
     global announcer
-    announcer = font.render(msg, True, msgColour, bckgdColour)
+    announcer = FONT.render(msg, True, msgColour, bckgdColour)
     screen.blit(announcer, announcerArea)
     pygame.display.update()
 
 def createTextButton(msg, msgColour, bckgdColour):
-    text = font.render(msg, True, msgColour, None)
+    text = FONT.render(msg, True, msgColour, None)
     buttonSurface = pygame.surface.Surface((text.get_width(), text.get_height()))
     buttonSurface.fill(bckgdColour)
     buttonSurface.blit(text, (0, 0))
     return buttonSurface
 
-def createImageButton(img, bckgdColour):
-    buttonSurface = pygame.surface.Surface((img.get_width(), img.get_height()))
-    buttonSurface.fill(bckgdColour)
-    buttonSurface.blit(img, (0, 0))
-    return buttonSurface
+# def createImageButton(img, bckgdColour):
+#     buttonSurface = pygame.surface.Surface((img.get_width(), img.get_height()))
+#     buttonSurface.fill(bckgdColour)
+#     buttonSurface.blit(img, (0, 0))
+#     return buttonSurface
 
 
 # ------------------------------- OTHER GAME HELPER METHODS -------------------------------
@@ -248,15 +248,12 @@ while running:
         currCardImg = pygame.image.load(card.getCardImage())
         userCardArea.blit(currCardImg, (x, y))
         x += currCardImg.get_width() + CARD_SPACE
-        button1 = createImageButton(currCardImg, RED)
-        screen.blit(button1, (0, 0))
 
     screen.blit(userCardArea, (WIDTH //4, HEIGHT * 0.75))
 
     # Add Button
     # button1 = createTextButton("CLICK ME NOWWW!!!", pygame.Color("White"), RED)
     # screen.blit(button1, (0, 0))
-
 
     # # For inlcuding images
     # currCardImg = pygame.image.load('blackjack/Images/2C.jpg')
@@ -271,10 +268,10 @@ while running:
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            img = pygame.image.load("blackjack/Images/cards/AS.jpg")
-            button2 = createImageButton(img, RED)
-            screen.blit(button2, (0, 0))
+        # elif event.type == pygame.MOUSEBUTTONDOWN:
+        #     img = pygame.image.load("blackjack/Images/cards/AS.jpg")
+        #     button2 = Button(img, RED)
+        #     screen.blit(button2, (0, 0))
     pygame.display.update()
 
 
