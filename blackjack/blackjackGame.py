@@ -25,6 +25,8 @@ GREEN = (46, 112, 64)
 LIGHT_GREEN = (117, 186, 117)
 RED = pygame.Color("red")
 BLACK = pygame.Color("black")
+BLUE = pygame.Color("blue")
+STEEL_BLUE = (35, 90, 225)
 
 FONT = pygame.font.Font('freesansbold.ttf', 32)
 BACKGROUND_COLOUR = GREEN
@@ -86,9 +88,10 @@ def announceText(msg, msgColour, bckgdColour):
 
 def createTextButton(msg, msgColour, bckgdColour):
     text = FONT.render(msg, True, msgColour, None)
-    buttonSurface = pygame.surface.Surface((text.get_width(), text.get_height()))
+    # buttonSurface = pygame.surface.Surface((text.get_width(), text.get_height()))
+    buttonSurface = pygame.surface.Surface((WIDTH * 0.14, text.get_height()))
     buttonSurface.fill(bckgdColour)
-    buttonSurface.blit(text, (0, 0))
+    buttonSurface.blit(text, ((buttonSurface.get_width() // 2) - (text.get_width() // 2), (buttonSurface.get_height() // 2) - (text.get_height() // 2)))
     return buttonSurface
 
 # def createImageButton(img, bckgdColour):
@@ -97,6 +100,22 @@ def createTextButton(msg, msgColour, bckgdColour):
 #     buttonSurface.blit(img, (0, 0))
 #     return buttonSurface
 
+def buttonClicked():
+    text = FONT.render("CLICKED", True, BLACK, None)
+    buttonSurface = pygame.surface.Surface((text.get_width(), text.get_height()))
+    buttonSurface.fill(RED)
+    buttonSurface.blit(text, (0, 0))
+    return buttonSurface
+
+def getStringWidth(str):
+    text = FONT.render(str, True, BLACK, None)
+    width = text.get_width()
+    return width
+
+def getStringHeight(str):
+    text = FONT.render(str, True, BLACK, None)
+    height = text.get_height()
+    return height
 
 # ------------------------------- OTHER GAME HELPER METHODS -------------------------------
 
@@ -149,6 +168,7 @@ def printWinner():
     else:
         print("The winner is...", winner.getName(), "!!", sep = "")
   
+
 # ------------------------------- USER METHODS -------------------------------
 
 # User takes a turn: hit or stand
@@ -185,6 +205,17 @@ def userTurn():
             return
         else:
             print("Not a valid response. Try again...")
+
+def userHits():
+    global winner
+    newCard = deck.drawCard()
+    user.addCard(newCard)
+    if (user.isBusted()):
+        winner = dealer
+def userStands():
+    global playerTurn
+    playerTurn = dealer
+
 
 # ------------------------------- DEALER METHODS -------------------------------
 
@@ -243,16 +274,26 @@ initHands()
 # user.addCard(card)
 user.printCards()
 
-# Area to display user's cards
-userCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
-userCardArea.fill(BACKGROUND_COLOUR)
+# Create buttons
+hitText = "HIT"
+standText = "STAND"
 
-# Area to display dealer's cards
-dealerCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
-dealerCardArea.fill(BACKGROUND_COLOUR)
+hitButton = createTextButton(hitText, BLACK, STEEL_BLUE)
+standButton = createTextButton(standText, BLACK, STEEL_BLUE)
+
+hitButtonPos = ((WIDTH // 2) - hitButton.get_width() - CARD_SPACE, HEIGHT * 0.85)
+standButtonPos = ((WIDTH // 2) + CARD_SPACE, HEIGHT * 0.85)
 
 running = True
 while running:
+    # Area to display user's cards
+    userCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
+    userCardArea.fill(BACKGROUND_COLOUR)
+
+    # Area to display dealer's cards
+    dealerCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
+    dealerCardArea.fill(BACKGROUND_COLOUR)
+
     # Initial message to user
     announceText(initMessage, RED, None)
     
@@ -315,8 +356,8 @@ while running:
     
 
     # Add Button
-    # button1 = createTextButton("CLICK ME NOWWW!!!", pygame.Color("White"), RED)
-    # screen.blit(button1, (0, 0))
+    screen.blit(hitButton, hitButtonPos)
+    screen.blit(standButton, standButtonPos)
 
     # # For inlcuding images
     # currCardImg = pygame.image.load('blackjack/Images/2C.jpg')
@@ -327,14 +368,24 @@ while running:
     # announceText("IT'S YOUR TURN!! GIVE ME THAT MONEY", RED, None)
     # userTurn()
 
+    mouse = pygame.mouse.get_pos()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
-        # elif event.type == pygame.MOUSEBUTTONDOWN:
-        #     img = pygame.image.load("blackjack/Images/cards/AS.jpg")
-        #     button2 = Button(img, RED)
-        #     screen.blit(button2, (0, 0))
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if standButtonPos[0] <= mouse[0] <= (standButtonPos[0] + standButton.get_width()) and standButtonPos[1] <= mouse[1] <= (standButtonPos[1] + standButton.get_height()):
+                if (playerTurn == user):
+                    userStands()
+                    button2 = buttonClicked()
+                    screen.blit(button2, (600, 100))
+            # User chooses to hit
+            if hitButtonPos[0] <= mouse[0] <= (hitButtonPos[0] + hitButton.get_width()) and hitButtonPos[1] <= mouse[1] <= (hitButtonPos[1] + hitButton.get_height()):
+                if (playerTurn == user):
+                    userHits()
+                    button3 = buttonClicked()
+                    screen.blit(button3, (100, 100))
     pygame.display.update()
 
 
