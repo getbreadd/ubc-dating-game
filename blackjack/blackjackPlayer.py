@@ -30,7 +30,7 @@ class Player:
     def getNumAce(self):
         numAce = 0
         for x in self.cards:
-            if x.getValue == 1:
+            if (x.rank == 1):
                 numAce += 1
         return numAce
     
