@@ -13,10 +13,10 @@ pygame.init()
 WIDTH = 850
 # HEIGHT = 700
 HEIGHT = 650
-USER_WIDTH = WIDTH // 2
+USER_WIDTH = WIDTH * (2/3)
 USER_HEIGHT = HEIGHT // 4
-DEALER_CARD_COORDS = (WIDTH //4, HEIGHT * 0.25)
-USER_CARD_COORDS = (WIDTH //4, HEIGHT * 0.60)
+DEALER_CARD_COORDS = ((WIDTH // 2) - (USER_WIDTH // 2), HEIGHT * 0.25)
+USER_CARD_COORDS = ((WIDTH // 2) - (USER_WIDTH // 2), HEIGHT * 0.60)
 CARD_HEIGHT = pygame.image.load("blackjack/Images/cards/2C.jpg").get_height()
 CARD_WIDTH = pygame.image.load("blackjack/Images/cards/2C.jpg").get_width()
 
@@ -49,8 +49,8 @@ winner = None
 
 initMessage = "LET'S GIVE AWAY ALL YOUR MONEYYYYY ^ - ^"
 announcer = FONT.render(initMessage, True, RED, None)
-announcerArea = announcer.get_rect()
-announcerArea.center = (WIDTH // 2, HEIGHT // 10)
+announcerRect = announcer.get_rect()
+announcerRect.center = (WIDTH // 2, HEIGHT // 10)
 smallFont = pygame.font.Font('freesansbold.ttf', 28)
 cardTotalFont = pygame.font.Font('freesansbold.ttf', 18)
 
@@ -83,8 +83,11 @@ pygame.display.flip()
 def announceText(msg, msgColour, bckgdColour):
     global announcer
     announcer = FONT.render(msg, True, msgColour, bckgdColour)
-    screen.blit(announcer, announcerArea)
-    pygame.display.update()
+    announcerArea = pygame.surface.Surface((announcer.get_width(), announcer.get_height()))
+    announcerArea.fill(BACKGROUND_COLOUR)
+    announcerArea.blit(announcer, (0, 0))
+    screen.blit(announcerArea, announcerRect)
+    # pygame.display.update()
 
 def createTextButton(msg, msgColour, bckgdColour):
     text = FONT.render(msg, True, msgColour, None)
@@ -295,13 +298,14 @@ while running:
     dealerCardArea.fill(BACKGROUND_COLOUR)
 
     # Initial message to user
-    announceText(initMessage, RED, None)
+    # announceText(initMessage, RED, None)
     
     # help button
     # TODO !!!
 
     # Position cards in center no matter amount of cards
     (x, y) = ((1 / 2) * (USER_WIDTH - (user.getNumCards() * CARD_WIDTH) - (CARD_SPACE * (user.getNumCards() - 1))), 0)
+    # Display User's cards
     for card in user.cards:
         currCardImg = pygame.image.load(card.getCardImage())
         # currCardImg = pygame.transform.scale(currCardImg, ((HEIGHT // 7), (WIDTH // 7)))  # resize test
@@ -349,6 +353,9 @@ while running:
     # !!! refactor with helper method for the text stuff later
     
     # user turn
+    if (user.hasBlackjack()):
+        announceText("BLACKJACK!! Dealer's turn...", RED, None)
+        playerTurn = dealer
     
     # dealer turn
     
@@ -375,17 +382,22 @@ while running:
             running = False
             pygame.quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            # User chooses to stand
             if standButtonPos[0] <= mouse[0] <= (standButtonPos[0] + standButton.get_width()) and standButtonPos[1] <= mouse[1] <= (standButtonPos[1] + standButton.get_height()):
                 if (playerTurn == user):
                     userStands()
-                    button2 = buttonClicked()
-                    screen.blit(button2, (600, 100))
+                    announceText("You stand. Dealer's turn...", RED, None)
+                    # button2 = buttonClicked()
+                    # screen.blit(button2, (600, 100))
             # User chooses to hit
             if hitButtonPos[0] <= mouse[0] <= (hitButtonPos[0] + hitButton.get_width()) and hitButtonPos[1] <= mouse[1] <= (hitButtonPos[1] + hitButton.get_height()):
                 if (playerTurn == user):
                     userHits()
-                    button3 = buttonClicked()
-                    screen.blit(button3, (100, 100))
+                    if (user.isBusted()):
+                        announceText("YOU'RE BUSTED! Dealer's turn...", RED, None)
+                        playerTurn = dealer
+                    # button3 = buttonClicked()
+                    # screen.blit(button3, (100, 100))
     pygame.display.update()
 
 
