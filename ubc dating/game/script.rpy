@@ -4,10 +4,24 @@
 # name of the character.
 
 
+# -------- Audio Declaration ---------
+define audio.talkingSounds = "cafe talking sound.mp3"
 
-define f = Character("your friend - pick name")
 
-define u = Character()
+
+
+# -------- Character Declaration ---------
+define u = Character("User")
+
+define cassie = Character("Cassie") # best friendo 
+
+
+
+# -------- Image Declaration ---------
+
+
+
+
 
 # The game starts here.
 
@@ -17,11 +31,22 @@ label start:
     # add a file (named either "bg room.png" or "bg room.jpg") to the
     # images directory to show it.
 
-    scene bg room
+    scene totem_poll with fade
 
-    # This shows a character sprite. A placeholder is used, but you can
-    # replace it by adding a file named "eileen happy.png" to the images
-    # directory.
+    "You sigh as you listen to the footsteps of people rushing to their next classes."
+    "The sound of the water spewing out of the fountain is just what you need at the moment."
+
+    "It's been a long while since you had time to sit down and enjoy the campus for it's beauty. Sometimes, it's easy to forget."
+
+    "To be honest"
+
+
+
+
+
+
+
+
 
     show eileen happy
 

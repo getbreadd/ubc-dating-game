@@ -1,22 +1,22 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
 While running game code:
-  File "game/script.rpy", line 37, in script
-    k "hello there"
-Exception: Sayer 'k' is not defined.
+  File "game/script.rpy", line 55, in script
+    f "Hey, are you going to the party next week? I heard it's going to be pretty fun actually."
+Exception: Sayer 'f' is not defined.
 
 -- Full Traceback ------------------------------------------------------------
 
 Full traceback:
-  File "game/script.rpy", line 37, in script
-    k "hello there"
-  File "/Users/jossieyan/Desktop/renpy-7.4.11-sdk/renpy/ast.py", line 681, in execute
+  File "game/script.rpy", line 55, in script
+    f "Hey, are you going to the party next week? I heard it's going to be pretty fun actually."
+  File "/Users/jossieyan/Desktop/renpy/renpy/ast.py", line 881, in execute
     who = eval_who(self.who, self.who_fast)
-  File "/Users/jossieyan/Desktop/renpy-7.4.11-sdk/renpy/ast.py", line 574, in eval_who
+  File "/Users/jossieyan/Desktop/renpy/renpy/ast.py", line 774, in eval_who
     raise Exception("Sayer '%s' is not defined." % who)
-Exception: Sayer 'k' is not defined.
+Exception: Sayer 'f' is not defined.
 
-Darwin-21.5.0-x86_64-i386-64bit
-Ren'Py 7.4.11.2266
+macOS-10.16-x86_64-i386-64bit x86_64
+Ren'Py 8.0.1.22070801
 ubc dating 1.0
-Wed Jun 22 02:00:46 2022
+Wed Aug 10 02:57:33 2022
