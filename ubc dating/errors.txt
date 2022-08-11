@@ -2,9 +2,11 @@
 errors listed below, and try again.
 
 
-File "game/image_declarations.rpy", line 4: end of line expected.
-    image water_fountain: "water_fountain.png" 
-                          ^
+The label start is defined twice, at File "game/intro_chapter.rpy", line 13:
+label start:
+and File "game/script.rpy", line 11:
+label start:
+
 
 Ren'Py Version: Ren'Py 8.0.1.22070801
-Wed Aug 10 02:29:44 2022
+Thu Aug 11 01:52:05 2022

@@ -542,7 +542,26 @@ style return_button:
 ##
 ## There's nothing special about this screen, and hence it also serves as an
 ## example of how to make a custom screen.
+screen customization():
 
+    tag menu
+    
+    use game_menu(_("Customization"), scroll="viewport"):
+
+        vbox:
+            style_prefix "radio"
+            label _("Pronouns")
+            textbutton _("He/Him/His") action SetScreenVariable("pronouns", "male")
+            textbutton _("She/Her/Hers") action SetScreenVariable("pronouns", "female")
+            textbutton _("They/Them/Theirs") action SetScreenVariable("pronouns", "neutral")
+        vbox:
+            input:
+                length 10
+
+
+
+
+                
 screen about():
 
     tag menu

@@ -1,14 +1,18 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
 While running game code:
-  File "game/script.rpy", line 55, in script
+  File "game/script.rpy", line 6, in script call
+    call intro_chapter from _call_intro_chapter
+  File "game/intro_chapter.rpy", line 58, in script
     f "Hey, are you going to the party next week? I heard it's going to be pretty fun actually."
 Exception: Sayer 'f' is not defined.
 
 -- Full Traceback ------------------------------------------------------------
 
 Full traceback:
-  File "game/script.rpy", line 55, in script
+  File "game/script.rpy", line 6, in script call
+    call intro_chapter from _call_intro_chapter
+  File "game/intro_chapter.rpy", line 58, in script
     f "Hey, are you going to the party next week? I heard it's going to be pretty fun actually."
   File "/Users/jossieyan/Desktop/renpy/renpy/ast.py", line 881, in execute
     who = eval_who(self.who, self.who_fast)
@@ -19,4 +23,4 @@ Exception: Sayer 'f' is not defined.
 macOS-10.16-x86_64-i386-64bit x86_64
 Ren'Py 8.0.1.22070801
 ubc dating 1.0
-Wed Aug 10 02:57:33 2022
+Thu Aug 11 02:21:57 2022
