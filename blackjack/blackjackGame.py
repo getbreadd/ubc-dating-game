@@ -112,6 +112,14 @@ def createTextButton(msg, msgColour, bckgdColour, width):
     buttonSurface.fill(bckgdColour)
     buttonSurface.blit(text, ((buttonSurface.get_width() // 2) - (text.get_width() // 2), (buttonSurface.get_height() // 2) - (text.get_height() // 2)))
     return buttonSurface
+
+def createSizedTextButton(msg, msgColour, bckgdColour):
+    text = FONT.render(msg, True, msgColour, None)
+    buttonSurface = pygame.surface.Surface((text.get_width(), text.get_height()))
+    # buttonSurface = pygame.surface.Surface((width, text.get_height()))
+    buttonSurface.fill(bckgdColour)
+    buttonSurface.blit(text, ((buttonSurface.get_width() // 2) - (text.get_width() // 2), (buttonSurface.get_height() // 2) - (text.get_height() // 2)))
+    return buttonSurface
     
 # def createImageButton(img, bckgdColour):
 #     buttonSurface = pygame.surface.Surface((img.get_width(), img.get_height()))
@@ -441,11 +449,14 @@ standButton = createTextButton(standText, BLACK, STEEL_BLUE, userButtonWidth)
 hitButtonPos = ((WIDTH // 2) - hitButton.get_width() - CARD_SPACE, USER_BUTTONS_Y)
 standButtonPos = ((WIDTH // 2) + CARD_SPACE, USER_BUTTONS_Y)
 
-seeDealersTurnButton = createTextButton("Click to see dealer's turn", BLACK, STEEL_BLUE, USER_WIDTH)
-seeDealersTurnButtonPos = ((WIDTH // 2) - (seeDealersTurnButton.get_width() // 2), USER_BUTTONS_Y)
+# seeDealersTurnButton = createTextButton("Click to see dealer's turn", BLACK, STEEL_BLUE, USER_WIDTH)
+# seeDealersTurnButtonPos = ((WIDTH // 2) - (seeDealersTurnButton.get_width() // 2), USER_BUTTONS_Y)
 
-seeWinnerButton = createTextButton("Click to see the winner", BLACK, STEEL_BLUE, USER_WIDTH)
-seeWinnerButtonPos = ((WIDTH // 2) - (seeWinnerButton.get_width() // 2), USER_BUTTONS_Y)
+# seeWinnerButton = createTextButton("Click to see the winner", BLACK, STEEL_BLUE, USER_WIDTH)
+# seeWinnerButtonPos = ((WIDTH // 2) - (seeWinnerButton.get_width() // 2), USER_BUTTONS_Y)
+
+seeDealersTurnButton = createSizedTextButton("Click to see dealer's turn", BLACK, STEEL_BLUE)
+seeDealersTurnButtonPos = ((WIDTH // 2) - (seeDealersTurnButton.get_width() // 2), HEIGHT * 0.85)
 
 seeWinnerButton = createSizedTextButton("Click to see Winner!", BLACK, STEEL_BLUE)
 seeWinnerButtonPos = ((WIDTH // 2) - (seeWinnerButton.get_width() // 2), HEIGHT * 0.85)
