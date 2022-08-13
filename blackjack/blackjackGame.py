@@ -276,10 +276,6 @@ def determineWinner():
         winner = None
     # updateBetAmount(winner) # FOR BET !!!
 
-def setGameOver(isGameOver):
-    global gameOver
-    gameOver = isGameOver
-
 def getWinnerMsg():
     return "The winner is... " + winner.name + "!!"
 
