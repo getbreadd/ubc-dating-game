@@ -1,0 +1,10 @@
+{
+    "files.exclude": {
+        "**/*.rpyc": true,
+        "**/*.rpa": true,
+        "**/*.rpymc": true,
+        "**/cache/": true
+    },
+    "zenMode.centerLayout": false,
+    "python.formatting.provider": "black"
+}
