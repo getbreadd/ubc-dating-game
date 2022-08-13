@@ -1,7 +1,5 @@
-from logging import setLogRecordFactory
-from venv import create
+from inspect import isbuiltin
 import pygame
-# from PIL import Image
 from blackjackPlayer import *
 from blackjackDeck import *
 
@@ -9,9 +7,7 @@ pygame.init()
 
 # ------------------------------- CONSTANTS -------------------------------
 
-# WIDTH = 1000
 WIDTH = 850
-# HEIGHT = 700
 HEIGHT = 650
 USER_WIDTH = WIDTH * (2/3)
 USER_HEIGHT = HEIGHT // 4
@@ -34,19 +30,25 @@ BACKGROUND_COLOUR = GREEN
 CARD_SPACE = 3
 CARD_WIDTH = 75
 
+USER_TURN_MSG = "It's your turn! Hit or Stand?"
+USER_BJ = "BLACKJACK!! Dealer's turn..."
+USER_STANDS = "You stand. Dealer's turn..."
+USER_BUSTED = "YOU'RE BUSTED! Dealer's turn..."
+DEALER_BUSTED = "Dealer busts!"
+DEALER_BJ = "Dealer has BLACKJACK!"
+DEALER_STANDS = "Dealer stands"
+
 # ------------------------------- INITIALIZE GAME STATS -------------------------------
 
 # initialize deck and players
 deck = Deck()
-# deck.printCards();
 user = Player('User')
 dealer = Player('Dealer')
 
 # ------------------------------- GAME VARIABLES -------------------------------
 
 playerTurn = user
-betAmount = 0
-global winner
+betAmount = 0  # FOR BET !!!
 winner = None
 
 initMessage = "LET'S GIVE AWAY ALL YOUR MONEYYYYY ^ - ^"
@@ -67,16 +69,29 @@ endBlackJackScreen = False
 
 gameOver = False
 
+dealerContButtonDisplayed = False
+winnerContButtonDisplayed = False
+pause = False
 
-# cardToAdd = deck.drawCard()
-# player.addCard(cardToAdd)
-# cardToAdd = deck.drawCard()
-# player.addCard(cardToAdd)
-# cardToAdd = deck.drawCard()
-# player.addCard(cardToAdd)
-# player.printCards()
-# total = player.getTotal()
-# print('total: ', total)
+curMsg = ""
+userTurnMsg = "userTurn"
+userBJMsg = "userBJ"
+userBustedMsg = "userBusted"
+userStandMsg = "userStands"
+dealerBJMsg = "dealerBJ"
+dealerBustedMsg = "dealerBusted"
+dealerStandsMsg = "dealerStands"
+
+msgList = {
+    userTurnMsg: USER_TURN_MSG,
+    userBJMsg: USER_BJ,
+    userBustedMsg: USER_BUSTED,
+    userStandMsg: USER_STANDS,
+    dealerBJMsg: DEALER_BJ,
+    dealerBustedMsg: DEALER_BUSTED,
+    dealerStandsMsg: DEALER_STANDS,
+}
+
 
 # ------------------------------- INITIALIZE PYGAME SCREEN -------------------------------
 
@@ -99,7 +114,6 @@ def announceText(msg, msgColour, bckgdColour):
     announcer = FONT.render(msg, True, msgColour, bckgdColour)
     announcerRect = announcer.get_rect()
     announcerRect.center = (WIDTH // 2, HEIGHT // 10)
-    # screen.fill(pygame.Color(BACKGROUND_COLOUR), (0, 0, WIDTH, (DEALER_CARD_COORDS[1] - dealerCardTextArea.height - 10)))
     screen.fill(pygame.Color(BACKGROUND_COLOUR), (0, 0, WIDTH, (DEALER_CARD_COORDS[1] - smallFont.get_height() - 10)))
     announcerArea.blit(announcer, (0, 0))
     screen.blit(announcerArea, announcerRect)
@@ -107,25 +121,10 @@ def announceText(msg, msgColour, bckgdColour):
 
 def createTextButton(msg, msgColour, bckgdColour, width):
     text = FONT.render(msg, True, msgColour, None)
-    # buttonSurface = pygame.surface.Surface((text.get_width(), text.get_height()))
     buttonSurface = pygame.surface.Surface((width, text.get_height()))
     buttonSurface.fill(bckgdColour)
     buttonSurface.blit(text, ((buttonSurface.get_width() // 2) - (text.get_width() // 2), (buttonSurface.get_height() // 2) - (text.get_height() // 2)))
     return buttonSurface
-
-def createSizedTextButton(msg, msgColour, bckgdColour):
-    text = FONT.render(msg, True, msgColour, None)
-    buttonSurface = pygame.surface.Surface((text.get_width(), text.get_height()))
-    # buttonSurface = pygame.surface.Surface((width, text.get_height()))
-    buttonSurface.fill(bckgdColour)
-    buttonSurface.blit(text, ((buttonSurface.get_width() // 2) - (text.get_width() // 2), (buttonSurface.get_height() // 2) - (text.get_height() // 2)))
-    return buttonSurface
-    
-# def createImageButton(img, bckgdColour):
-#     buttonSurface = pygame.surface.Surface((img.get_width(), img.get_height()))
-#     buttonSurface.fill(bckgdColour)
-#     buttonSurface.blit(img, (0, 0))
-#     return buttonSurface
 
 def buttonClicked():
     text = FONT.render("CLICKED", True, BLACK, None)
@@ -139,33 +138,18 @@ def getStringWidth(str):
     width = text.get_width()
     return width
 
-def getStringHeight(str):
-    text = FONT.render(str, True, BLACK, None)
-    height = text.get_height()
-    return height
-
-def displayDealerContinueButton():
+def displayContinueButton(button, buttonPos):
     screen.fill(pygame.Color(BACKGROUND_COLOUR), (0, hitButtonPos[1], WIDTH, hitButton.get_height()))
-    screen.blit(seeDealersTurnButton, seeDealersTurnButtonPos)
-    
-def displayClickToSeeWinnerButton():
-    screen.fill(pygame.Color(BACKGROUND_COLOUR), (0, hitButtonPos[1], WIDTH, hitButton.get_height()))
-    screen.blit(seeWinnerButton, seeWinnerButtonPos)
-    
-# def displayEndScreen():
-#     screen.fill(pygame.Color(BACKGROUND_COLOUR))
-#     announceText("HERE", RED, None)
+    screen.blit(button, buttonPos)
     
 def displayMainGame():
-    global playerTurn
-    global startDealerTurn
-    global dealerCardTextArea
+    global playerTurn, startDealerTurn, dealerCardTextArea
+    global curMsg, dealerContButtonDisplayed
     # Position cards in center no matter amount of cards
     (x, y) = ((1 / 2) * (USER_WIDTH - (user.getNumCards() * CARD_WIDTH) - (CARD_SPACE * (user.getNumCards() - 1))), 0)
     # Display User's cards
     for card in user.cards:
         currCardImg = pygame.image.load(card.getCardImage())
-        # currCardImg = pygame.transform.scale(currCardImg, ((HEIGHT // 7), (WIDTH // 7)))  # resize test
         userCardArea.blit(currCardImg, (x, y))
         x += currCardImg.get_width() + CARD_SPACE
 
@@ -178,10 +162,9 @@ def displayMainGame():
         currCardImg = pygame.image.load(dealer.cards[0].getCardImage())
         dealerCardArea.blit(currCardImg, (w, z))
         w += currCardImg.get_width() + CARD_SPACE
-        currCardImg = pygame.image.load("blackjack/Images/cards/Card_Back.jpg") # FILL IN LATER
+        currCardImg = pygame.image.load("blackjack/Images/cards/Card_Back.jpg")
         dealerCardArea.blit(currCardImg, (w, z))
     elif (playerTurn == dealer) and startDealerTurn:
-        # dealerCardArea.fill(BACKGROUND_COLOUR)
         for card in dealer.cards:
             currCardImg = pygame.image.load(card.getCardImage())
             dealerCardArea.blit(currCardImg, (w, z))
@@ -198,7 +181,6 @@ def displayMainGame():
     screen.blit(userCardText, ((WIDTH // 2) - (userCardTextArea.width // 2), (USER_CARD_COORDS[1] - userCardTextArea.height - 10)))
     
     # Position the "Dealer Total" and "Your total" text
-    # dealerTotalText = cardTotalFont.render(("Total: " + str(dealer.getTotal())), True, BLACK, None)
     if (playerTurn == dealer):
         dealerTotalText = cardTotalFont.render(("Total: " + str(dealer.getTotal())), True, BLACK, None)
     else:
@@ -210,46 +192,39 @@ def displayMainGame():
     userTotalTextArea = userTotalText.get_rect()
     screen.blit(userTotalText, ((WIDTH // 2) - (userTotalTextArea.width // 2), (USER_CARD_COORDS[1] + CARD_HEIGHT + 10)))
     pygame.display.update()
-    # !!! refactor with helper method for the text stuff later
     
     # user turn
     if (user.hasBlackjack() and playerTurn == user):
-        announceText("BLACKJACK!! Dealer's turn...", RED, None)
+        announceText(msgList.get(userBJMsg), RED, None)
+        curMsg = userBJMsg
         playerTurn = dealer
         startDealerTurn = True
-        displayDealerContinueButton()
-    
-    # dealer turn
-    
-    # ending screen
+        displayContinueButton(seeDealersTurnButton, seeDealersTurnButtonPos)
+        dealerContButtonDisplayed = True
     
     # Add Button
     if (playerTurn == user):
         screen.blit(hitButton, hitButtonPos)
         screen.blit(standButton, standButtonPos)
-        
-        
-    # user turn
-    # if (user.hasBlackjack() and playerTurn == user):
-    #     announceText("BLACKJACK!! Dealer's turn...", RED, None)
-    #     playerTurn = dealer
-    #     startDealerTurn = True
-    #    # displayDealerContinueButton()
-    #     displayContinueButton(seeDealersTurnButton, seeDealersTurnButtonPos)
     
-    # dealer turn
+    if (dealerContButtonDisplayed and not gameEnd):
+        displayContinueButton(seeDealersTurnButton, seeDealersTurnButtonPos)
+    if (winnerContButtonDisplayed):
+        displayContinueButton(seeWinnerButton, seeWinnerButtonPos)
+        
+    # Add Help Button
+    screen.blit(helpButton, helpButtonPos)
 
-    # Winner Determined
-    # if (gameOver):
-    #    determineWinner()
-    #    displayContinueButton(seeWinnerButton, seeWinnerButtonPos)
+    # Set Announcer
+    curAnnouncedMsg = determinAnnouncerState()
+    displayAnnouncer(curAnnouncedMsg)
         
 def displayLongText(msg):
     words = [word.split(' ') for word in msg.splitlines()]
     space = FONT.size(' ')[0]
-    wordsWidth = (WIDTH // 5) * 3 
+    wordsWidth = USER_WIDTH + (USER_WIDTH // 4)
     wordsHeight = HEIGHT// 3
-    pos = (WIDTH // 5, HEIGHT // 5)
+    pos = ((WIDTH // 2) - (wordsWidth // 2), announcerRect.centery)
     x, y = pos
     for line in words:
         for word in line:
@@ -262,14 +237,11 @@ def displayLongText(msg):
             x += word_width + space
         x = pos[0]  # Reset the x.
         y += word_height  # Start on new row.
-            
-def displayContinueButton(button, buttonPos):
-    screen.fill(pygame.Color(BACKGROUND_COLOUR), (hitButtonPos[0], hitButtonPos[1], WIDTH, hitButton.get_height()))
-    screen.blit(button, buttonPos)
 
 
 # ------------------------------- OTHER GAME HELPER METHODS -------------------------------
 
+# FOR BET !!!
 # User to place the bet amount
 def placeBet():
     global betAmount
@@ -280,11 +252,8 @@ def initHands():
     user.addCard(deck.drawCard())
     dealer.addCard(deck.drawCard())
     dealer.addCard(deck.drawCard())
-    print("Starting cards:")
-    user.printCards()
-    dealer.printCards()
-    # dealer.addCard(deck.drawCard())
 
+# FOR BET !!!
 # change bet amount to loss if user lost game
 def updateBetAmount(winner):
     global betAmount
@@ -295,74 +264,41 @@ def updateBetAmount(winner):
 
 # Determine who the winner of the game is
 def determineWinner():
-    # global winner
-    if (winner == None):
-        dealerTotal = dealer.getTotal()
-        userTotal = user.getTotal()
-        dealerBusted = dealer.isBusted()
-        userBusted = user.isBusted()
-        # dealer wins
-        if (userBusted | ((not dealerBusted) & (dealerTotal > userTotal))):
-            winner = dealer
-        elif (dealerBusted | ((not userBusted) & (userTotal > dealerTotal))):
-            winner = user
-        else:
-            winner = None
-            # <CONSOLE>
-            # print("PUSH!")
-    updateBetAmount(winner)
-
-# <CONSOLE>
-# def printWinner():
-#     global winner
-#     if (winner == None):
-#         winner = "No one"
-#         print("The winner is...", winner, "!!", sep = "")
-#     else:
-#         print("The winner is...", winner.getName(), "!!", sep = "")
+    global winner
+    dealerTotal = dealer.getTotal()
+    userTotal = user.getTotal()
+    dealerBusted = dealer.isBusted()
+    userBusted = user.isBusted()
+    if (userBusted | ((not dealerBusted) & (dealerTotal > userTotal))):
+        winner = dealer
+    elif (dealerBusted | ((not userBusted) & (userTotal > dealerTotal))):
+        winner = user
+    else:
+        winner = None
+    # updateBetAmount(winner) # FOR BET !!!
 
 def setGameOver(isGameOver):
     global gameOver
     gameOver = isGameOver
+
+def getWinnerMsg():
+    return "The winner is... " + winner.name + "!!"
+
+def displayHelp():
+    howToWinBustText = "How to Win:\n" + "\nOnly Dealer Busts = Win \nOnly You Busts = Lose \nBoth You and Dealer Bust = Lose\n"
+    howToWinNoBustText = "No One Busts = Player with highest total closes to 21 wins"
+    text = "GOAL: GET AS CLOSE TO A TOTAL OF 21 WITHOUT GOING OVER.\n\n" + howToWinBustText + howToWinNoBustText + "\n\nDon't lose..."
+    displayLongText(text)
+
+def displayAnnouncer(msgKey):
+    announceText(msgKey, RED, None)
+
+def determinAnnouncerState():
+    msgKey = msgList.get(curMsg)
+    return msgKey
   
 
 # ------------------------------- USER METHODS -------------------------------
-
-# <CONSOLE>
-# User takes a turn: hit or stand
-# hit -> deal a card to user's hand
-#     -> check value for busted -> busted? end turn : continue
-# stand -> end turn
-# def userTurn():
-#     global playerTurn, winner
-#     if user.isBusted():
-#         winner = dealer
-#         print("You bust!!")
-#         return
-#     print("It's your turn!!")
-#     while(playerTurn == user):
-#         user.printCards()
-#         print("Total: " + str(user.getTotal()))
-#         if (user.hasBlackjack()):
-#             user.printCards()
-#             print("Congrats! You got BLACKJACK!!")
-#             return
-#         choice = input("Would you like to hit or stand?: ")
-#         if (choice.casefold() == "hit"):
-#             newCard = deck.drawCard()
-#             user.addCard(newCard)
-#             if (user.isBusted()):
-#                 winner = dealer
-#                 user.printCards()
-#                 print("Total: " + str(user.getTotal()))
-#                 print("You're busted! RIP")
-#                 # playerTurn = dealer
-#                 return
-#         elif (choice.casefold() == "stand"):
-#             playerTurn = dealer
-#             return
-#         else:
-#             print("Not a valid response. Try again...")
 
 def userHits():
     global winner
@@ -378,65 +314,13 @@ def userStands():
 
 # ------------------------------- DEALER METHODS -------------------------------
 
-# <CONSOLE>
-# def dealerPrintHand():
-#     print("Dealer cards:")
-#     dealer.printCards()
-#     print("Total:",dealer.getTotal(),end="\n")
-#     return
-
-# <CONSOLE>
-# def dealerTurn():
-#     inp = input('---Enter for dealer turn---')
-#     while (inp != ""):
-#         inp = input('---Please press enter for dealer turn---')
-#     while (dealer.getTotal() < 17):
-#         dealerPrintHand()
-#         print("Dealer hits")
-#         dealer.addCard(deck.drawCard())
-#         inp = input('---Please press enter to continue---')
-#         while (inp != ""):
-#             inp = input('---Please press enter for to continue---')
-#     dealerPrintHand()
-#     if (dealer.hasBlackjack()):
-#         print("Dealer has BLACKJACK!!")
-#     elif (dealer.isBusted()):
-#         print("Dealer busts!")
-#     else:
-#         print("Dealer stands")
-#     return
-
 def dealerHits():
     dealer.addCard(deck.drawCard())
 
 
-# ------------------------------- CONSOLE TESTING -------------------------------
-
-# print("Starting amount of hearts: ", user.getBankrollAmount(), sep = "")
-# placeBet()
-# user.addCard(deck.drawCard())
-# user.addCard(deck.drawCard())
-# dealer.addCard(deck.drawCard())
-# print("Starting cards:")
-# user.printCards()
-# dealer.printCards()
-# dealer.addCard(deck.drawCard())
-# print("----------------------------------")
-# userTurn()
-# print("----------------------------------")
-# dealerTurn()
-# print("----------------------------------")
-# determineWinner()
-# printWinner()
-# user.updateBankroll(betAmount)
-# print("Remaining hearts: ", user.getBankrollAmount(), sep = "")
-
 #  ------------------------------- PYGAME -------------------------------
 
 initHands()
-# card = deck.drawCard()
-# user.addCard(card)
-user.printCards()
 
 # Create buttons
 userButtonWidth = WIDTH * 0.14
@@ -449,72 +333,66 @@ standButton = createTextButton(standText, BLACK, STEEL_BLUE, userButtonWidth)
 hitButtonPos = ((WIDTH // 2) - hitButton.get_width() - CARD_SPACE, USER_BUTTONS_Y)
 standButtonPos = ((WIDTH // 2) + CARD_SPACE, USER_BUTTONS_Y)
 
-# seeDealersTurnButton = createTextButton("Click to see dealer's turn", BLACK, STEEL_BLUE, USER_WIDTH)
-# seeDealersTurnButtonPos = ((WIDTH // 2) - (seeDealersTurnButton.get_width() // 2), USER_BUTTONS_Y)
-
-# seeWinnerButton = createTextButton("Click to see the winner", BLACK, STEEL_BLUE, USER_WIDTH)
-# seeWinnerButtonPos = ((WIDTH // 2) - (seeWinnerButton.get_width() // 2), USER_BUTTONS_Y)
-
-seeDealersTurnButton = createSizedTextButton("Click to see dealer's turn", BLACK, STEEL_BLUE)
+seeDealersTurnText = "Click to see dealer's turn"
+seeDealersTurnButton = createTextButton(seeDealersTurnText, BLACK, STEEL_BLUE, getStringWidth(seeDealersTurnText))
 seeDealersTurnButtonPos = ((WIDTH // 2) - (seeDealersTurnButton.get_width() // 2), HEIGHT * 0.85)
 
-seeWinnerButton = createSizedTextButton("Click to see Winner!", BLACK, STEEL_BLUE)
+seeWinnerText = "Click to see Winner!"
+seeWinnerButton = createTextButton(seeWinnerText, BLACK, STEEL_BLUE, getStringWidth(seeWinnerText))
 seeWinnerButtonPos = ((WIDTH // 2) - (seeWinnerButton.get_width() // 2), HEIGHT * 0.85)
 
-# buttonPos = ((WIDTH // 2))
+helpButton = createTextButton("?", BLACK, BLUE, WIDTH * 0.05)
+helpButtonPos = (WIDTH - helpButton.get_width(), HEIGHT - helpButton.get_height())
 
 running = True
 while running:
-    
-    # Area to display announcer text
-    announcerArea = pygame.surface.Surface((WIDTH, FONT.get_height()))
-    announcerArea.fill(BACKGROUND_COLOUR)
-    
-    # Area to display user's cards
-    userCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
-    userCardArea.fill(BACKGROUND_COLOUR)
-
-    # Area to display dealer's cards
-    dealerCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
-    dealerCardArea.fill(BACKGROUND_COLOUR)
-
-    # Initial message to user
-    # announceText(initMessage, RED, None)ß
-    
-    # help button
-    # TODO !!!
-    
-    if displayStartScreen:
-        screen.fill(BACKGROUND_COLOUR)
-        displayLongText("It's time to gamble with a game of BlackJack! Goal of game: get 21 without going over. Click anywhere to start")
-    elif displayEndScreen:
-        screen.fill(BACKGROUND_COLOUR)
-        endCountText = "Your total: " + str(user.getTotal()) + "\nDealer total: " + str(dealer.getTotal())
-        toExitText = "\nExit window to return to main game"
+    if (not pause):
+        # Area to display announcer text
+        announcerArea = pygame.surface.Surface((WIDTH, FONT.get_height()))
+        announcerArea.fill(BACKGROUND_COLOUR)
         
-        if winner == dealer:
-            textToDisplay = "Oh no! You've lost!\n" + endCountText + toExitText
-            displayLongText(textToDisplay)   
-        elif winner == user:
-            textToDisplay = "Congratulations, you've won!\n" + endCountText + toExitText
-            displayLongText(textToDisplay)
-        else:
-            textToDisplay = "It's a tie!\n" + endCountText + toExitText
-            displayLongText(textToDisplay)   
-    elif endBlackJackScreen:
-        screen.fill(BLACK)
-    elif displayGameScreen:
-        displayMainGame()
-    # # For inlcuding images
-    # currCardImg = pygame.image.load('blackjack/Images/2C.jpg')
-    # screen.blit(currCardImg, (0, 0))
+        # Area to display user's cards
+        userCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
+        userCardArea.fill(BACKGROUND_COLOUR)
 
-    # User's turn
-    # pause = input("Press enter to continue...")
-    # announceText("IT'S YOUR TURN!! GIVE ME THAT MONEY", RED, None)
-    # userTurn()
+        # Area to display dealer's cards
+        dealerCardArea = pygame.surface.Surface((USER_WIDTH, USER_HEIGHT))
+        dealerCardArea.fill(BACKGROUND_COLOUR)
+        
+        if displayStartScreen:
+            screen.fill(BACKGROUND_COLOUR)
+            displayLongText("It's time to gamble with a game of BlackJack! \n\nGoal of game: get 21 without going over. \n\nClick anywhere to start")
+        elif displayEndScreen:
+            screen.fill(BACKGROUND_COLOUR)
+            userEndCountText = "\nYour total: " + str(user.getTotal()) + (" (Busted)" if user.isBusted() else "") + (" (BlackJack)" if user.hasBlackjack() else "")
+            dealerEndCountText = "\nDealer total: " + str(dealer.getTotal()) + (" (Busted)" if dealer.isBusted() else "") + (" (BlackJack)" if dealer.hasBlackjack() else "")
+            toExitText = "\n\nExit window to return to main game"
+            
+            if winner == dealer:
+                textToDisplay = "Oh no! You've lost!\n" + userEndCountText + dealerEndCountText + toExitText
+                displayLongText(textToDisplay)   
+            elif winner == user:
+                textToDisplay = "Congratulations, you've won!\n" + userEndCountText + dealerEndCountText + toExitText
+                displayLongText(textToDisplay)
+            else:
+                textToDisplay = "PUSH! It's a draw!\n" + userEndCountText + dealerEndCountText + toExitText
+                displayLongText(textToDisplay)   
+        elif endBlackJackScreen:
+            screen.fill(BLACK)
+        elif displayGameScreen:
+            displayMainGame()
 
     mouse = pygame.mouse.get_pos()
+
+    # Display help info if mouse hovers over help button
+    if (not displayStartScreen and not displayEndScreen and (helpButtonPos[0] <= mouse[0] <= WIDTH) and (helpButtonPos[1] <= mouse[1] <= HEIGHT)):
+        screen.fill(BACKGROUND_COLOUR)
+        displayHelp()
+        pause = True
+    else:
+        if (pause):
+            screen.fill(BACKGROUND_COLOUR)
+        pause = False
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -522,64 +400,52 @@ while running:
             pygame.quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if gameEnd:
-                dealerTotal = dealer.getTotal()
-                userTotal = user.getTotal()
-                dealerBusted = dealer.isBusted()
-                userBusted = user.isBusted()
-                if (userBusted | ((not dealerBusted) & (dealerTotal > userTotal))):
-                    winner = dealer
-                elif (dealerBusted | ((not userBusted) & (userTotal > dealerTotal))):
-                    winner = user
-                else:
-                    winner = None
+                determineWinner()
                 displayGameScreen = False
                 displayEndScreen = True
             elif displayStartScreen:
                 screen.fill(BACKGROUND_COLOUR)
-                announceText("It's your turn! Hit or Stand?", RED, None)
+                announceText(msgList.get(userTurnMsg), RED, None)
+                curMsg = userTurnMsg
                 displayGameScreen = True
                 displayStartScreen = False
-            # elif displayEndScreen:
-            #     displayEndScreen = False
             # User chooses to stand
             elif (playerTurn == user) and (standButtonPos[0] <= mouse[0] <= (standButtonPos[0] + standButton.get_width()) and standButtonPos[1] <= mouse[1] <= (standButtonPos[1] + standButton.get_height())):
                 if (playerTurn == user):
                     userStands()
-                    announceText("You stand. Dealer's turn...", RED, None)
+                    announceText(msgList.get(userStandMsg), RED, None)
+                    curMsg = userStandMsg
                     startDealerTurn = True
                     displayContinueButton(seeDealersTurnButton, seeDealersTurnButtonPos)
-                    # button2 = buttonClicked()
-                    # screen.blit(button2, (600, 100))
+                    dealerContButtonDisplayed = True
             # User chooses to hit
             elif (playerTurn == user) and (hitButtonPos[0] <= mouse[0] <= (hitButtonPos[0] + hitButton.get_width()) and hitButtonPos[1] <= mouse[1] <= (hitButtonPos[1] + hitButton.get_height())):
                 if (playerTurn == user):
                     userHits()
                     if (user.isBusted()):
-                        announceText("YOU'RE BUSTED! Dealer's turn...", RED, None)
+                        announceText(msgList.get(userBustedMsg), RED, None)
+                        curMsg = userBustedMsg
                         playerTurn = dealer
                         startDealerTurn = True
                         displayContinueButton(seeDealersTurnButton, seeDealersTurnButtonPos)
-                    # button3 = buttonClicked()
-                    # screen.blit(button3, (100, 100))
+                        dealerContButtonDisplayed = True
+            # Dealer's Turn
             elif startDealerTurn and (playerTurn == dealer) and (not gameEnd):
-            # elif startDealerTurn and (playerTurn == dealer) and (seeDealersTurnButtonPos[0] <= mouse[0] <= (seeDealersTurnButtonPos[0] + seeDealersTurnButton.get_width()) and seeDealersTurnButtonPos[1] <= mouse[1] <= (seeDealersTurnButtonPos[1] + seeDealersTurnButton.get_height())):
-                # announceText("TEST", RED, None)
                 while (dealer.getTotal() < 17):
                     dealerHits()
                 if (dealer.getTotal() == 21):
-                    announceText("Dealer has BLACKJACK!", RED, None)
+                    announceText(msgList.get(dealerBJMsg), RED, None)
+                    curMsg = dealerBJMsg
                 elif (dealer.getTotal() > 21):
-                    announceText("Dealer busts!", RED, None)
+                    announceText(msgList.get(dealerBustedMsg), RED, None)
+                    curMsg = dealerBustedMsg
                 elif (dealer.getTotal() >= 17):
-                    announceText("Dealer stands", RED, None)
-                displayClickToSeeWinnerButton()
+                    announceText(msgList.get(dealerStandsMsg), RED, None)
+                    curMsg = dealerStandsMsg
+                displayContinueButton(seeWinnerButton, seeWinnerButtonPos)
+                winnerContButtonDisplayed = True
                 gameEnd = True
-            #    setGameOver(True)
-            #elif gameOver:
-            #    if (winner == None):
-            #        announceText("PUSH! It's a draw!", RED, None)
-            #    else:
-            #        announceText("The winner is... " + winner.name + "!!", RED, None)
+
     pygame.display.update()
 
 
